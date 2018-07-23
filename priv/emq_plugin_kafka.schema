@@ -1,0 +1,35 @@
+
+{mapping, "emq.plugin.kafka.server", "emq_plugin_kafka.server", [
+  {default, {"127.0.0.1", 6379}},
+  {datatype, [integer, ip, string]}
+]}.
+
+
+{mapping, "emq.plugin.kafka.topic", "emq_plugin_kafka.server", [
+  {default, "kafka"},
+  {datatype, string},
+  hidden
+]}.
+
+
+
+{
+    translation,
+    "emq_plugin_kafka.server",
+    fun(Conf) ->
+            {RHost, RPort} = case cuttlefish:conf_get("emq.plugin.kafka.server", Conf) of
+                                 {Ip, Port} -> {Ip, Port};
+                                 S          -> case string:tokens(S, ":") of
+                                                   [Domain]       -> {Domain, 9092};
+                                                   [Domain, Port] -> {Domain, list_to_integer(Port)}
+                                               end
+                             end,
+            Topic = cuttlefish:conf_get("emq.plugin.kafka.topic", Conf),
+            [
+             {host, RHost},
+             {port, RPort},
+             {topic, Topic}
+            ]
+    end
+}.
+
