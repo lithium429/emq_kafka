@@ -151,7 +151,7 @@ ekaf_send(Message, _Env) ->
     io:format("Str : ~w.~n", [Str]),
     Json = mochijson2:encode(Str),
     KafkaTopic = get_topic(),
-    ekaf:produce_sync_batched(KafkaTopic, list_to_binary(Json)).
+    ekaf:produce_async(KafkaTopic, list_to_binary(Json)).
  
 get_form_clientid({ClientId, Username}) -> ClientId;
 get_form_clientid(From) -> From.
