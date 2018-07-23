@@ -9,14 +9,6 @@ Plugin Config
 
 Each plugin should have a 'etc/{plugin_name}.conf|config' file to store application config.
 
-Authentication and ACL
-----------------------
-
-```
-emqttd_access_control:register_mod(auth, ?MODULE, Env).
-emqttd_access_control:register_mod(acl, ?MODULE, Env).
-```
-
 Plugin and Hooks
 -----------------
 
