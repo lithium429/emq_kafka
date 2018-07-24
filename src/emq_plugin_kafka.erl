@@ -33,10 +33,32 @@ load(Env) ->
  
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
+    Str = [
+              {client_id, ClientId},
+              {type, ["connected"]},
+              {message,[]}
+              {cluster_node, node()},
+              {ts, emqttd_time:now_ms()}
+           ],
+    io:format("connected Str : ~w.~n", [Str]),
+    Json = mochijson2:encode(Str),
+    KafkaTopic = get_topic(),
+    ekaf:produce_async(KafkaTopic, list_to_binary(Json)),
     {ok, Client}.
  
 on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _Env) ->
     io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
+    Str = [
+              {client_id, ClientId},
+              {type, ["disconnected"]},
+              {message,[]}
+              {cluster_node, node()},
+              {ts, emqttd_time:now_ms()}
+           ],
+    io:format("disconnected Str : ~w.~n", [Str]),
+    Json = mochijson2:encode(Str),
+    KafkaTopic = get_topic(),
+    ekaf:produce_async(KafkaTopic, list_to_binary(Json)),
     ok.
  
 on_client_subscribe(ClientId, Username, TopicTable, _Env) ->
